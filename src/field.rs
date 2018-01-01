@@ -82,13 +82,13 @@ impl Cell {
     }
 
     pub fn get_candidate_vector(&self) -> Vec<u8> {
-        let mut v = Vec::new();
+        let mut vector = Vec::new();
         for i in 1..10 {
             if self.candidates & (1u16 << i) != 0 {
-                v.push(i)
+                vector.push(i)
             }
         }
-        v
+        vector
     }
 
     pub fn remove_candidate(&mut self, cand: u8) {
