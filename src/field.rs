@@ -127,3 +127,34 @@ impl Cell {
         }
     }
 }
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn empty_cell_behavior() {
+        let mut first_cell = Cell::empty_cell();
+        assert!(first_cell.get_candidates() == CANDIDATE_MASK);
+        first_cell.remove_candidate(15);
+        assert!(first_cell.get_candidates() == CANDIDATE_MASK);
+        let x = 4;
+        assert!(first_cell.has_candidate(x));
+        first_cell.remove_candidate(x);
+        assert!(!first_cell.has_candidate(x));
+        assert!(first_cell.get_candidates() == CANDIDATE_MASK ^ (1 << x));
+        assert!(first_cell.get_candidate_vector() == vec![1,2,3,5,6,7,8,9]);
+        assert!(first_cell.get_digit() == None);
+        first_cell.try_solve();
+        assert!(first_cell.get_digit() == None);
+        first_cell.remove_candidates(vec![1,2,5,6,7,8,9]);
+        assert!(first_cell.get_candidates() == (1 << 3));
+        assert!(first_cell.get_candidate_vector() == vec![3]);
+        assert!(first_cell.get_digit() == None);
+        first_cell.try_solve();
+        assert!(first_cell.get_digit() == Some(3));
+    }
+
+    
+}
