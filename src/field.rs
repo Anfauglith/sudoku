@@ -16,10 +16,6 @@ pub struct Cell {
 
 impl Cell {
 
-    pub fn get_digit(&self) -> Option<u8> {
-        self.digit
-    }
-
     pub fn empty_cell() -> Cell {
         Cell {
             digit: None,
@@ -47,6 +43,18 @@ impl Cell {
         self.fixed
     }
 
+    pub fn get_digit(&self) -> Option<u8> {
+        self.digit
+    }
+
+    fn fix(&mut self) -> bool {
+        match self.digit {
+            None => return false,
+            Some(_) => self.fixed = true
+        }
+        true
+    }
+
     fn set_to(&mut self, dig: u8) -> bool {
         if self.fixed {
             match self.digit {
@@ -56,14 +64,6 @@ impl Cell {
         }
         self.digit = Some(dig);
         true  
-    }
-
-    fn fix(&mut self) -> bool {
-        match self.digit {
-            None => return false,
-            Some(_) => self.fixed = true
-        }
-        true
     }
 
     pub fn fix_to(&mut self, dig: u8) -> bool {
@@ -134,7 +134,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn empty_cell_behavior() {
+    fn removing_candidates_and_solving() {
         let mut first_cell = Cell::empty_cell();
         assert!(first_cell.get_candidates() == CANDIDATE_MASK);
         first_cell.remove_candidate(15);
@@ -156,5 +156,24 @@ mod tests {
         assert!(first_cell.get_digit() == Some(3));
     }
 
-    
+    #[test]
+    fn cell_fixing() {
+        let mut fixed_cell = Cell::fixed_cell(5);
+        assert!(fixed_cell.is_fixed());
+        assert!(!fixed_cell.set_to(4));
+        assert!(fixed_cell.set_to(5));
+        let mut empty_cell = Cell::empty_cell();
+        assert!(empty_cell.set_to(4));
+        assert!(empty_cell.get_digit()==Some(4));
+        assert!(empty_cell.set_to(2));
+        assert!(empty_cell.get_digit()==Some(2));
+        assert!(empty_cell.fix());
+        assert!(empty_cell.is_fixed());
+        assert!(empty_cell.set_to(2));
+        assert!(!empty_cell.set_to(4));
+        let mut another_cell = Cell::empty_cell();
+        assert!(another_cell.fix_to(7));
+        assert!(another_cell.is_fixed());
+        assert!(!another_cell.fix_to(3));
+    }
 }
