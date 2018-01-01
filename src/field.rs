@@ -1,12 +1,9 @@
 
 const CANDIDATE_MASK: u16 = 0b0000_0011_1111_1110; // 0x03FE
 
-
 pub struct Field {
     cells: [[Cell; 9];9]
 }
-
-
 
 pub struct Cell {
     digit: Option<u8>,
@@ -24,11 +21,11 @@ impl Cell {
         }
     }
 
-    pub fn fixed_cell(dig: u8) -> Cell {
+    pub fn fixed_cell(digit: u8) -> Cell {
         Cell {
-            digit: Some(dig),
+            digit: Some(digit),
             fixed: true,
-            candidates: 1u16 << dig
+            candidates: 1u16 << digit
         }
     }
     
@@ -55,26 +52,26 @@ impl Cell {
         true
     }
 
-    fn set_to(&mut self, dig: u8) -> bool {
+    fn set_to(&mut self, digit: u8) -> bool {
         if self.fixed {
             match self.digit {
-                Some(x) if (dig == x) => return true,
+                Some(x) if (digit == x) => return true,
                 _ => return false
             }
         }
-        self.digit = Some(dig);
+        self.digit = Some(digit);
         true  
     }
 
-    pub fn fix_to(&mut self, dig: u8) -> bool {
-        if self.set_to(dig) && self.fix() {
+    pub fn fix_to(&mut self, digit: u8) -> bool {
+        if self.set_to(digit) && self.fix() {
              return true;
         }
         false
     } 
 
-    pub fn has_candidate(&self, cand: u8) -> bool {
-        self.candidates & ( 1u16 << cand ) != 0
+    pub fn has_candidate(&self, candidate: u8) -> bool {
+        self.candidates & ( 1u16 << candidate ) != 0
     }
 
     pub fn get_candidates(&self) -> u16 {
@@ -82,23 +79,23 @@ impl Cell {
     }
 
     pub fn get_candidate_vector(&self) -> Vec<u8> {
-        let mut vector = Vec::new();
+        let mut candidate_vector = Vec::new();
         for i in 1..10 {
             if self.candidates & (1u16 << i) != 0 {
-                vector.push(i)
+                candidate_vector.push(i)
             }
         }
-        vector
+        candidate_vector
     }
 
-    pub fn remove_candidate(&mut self, cand: u8) {
-        self.candidates &= !(1u16 << cand);
+    pub fn remove_candidate(&mut self, candidate: u8) {
+        self.candidates &= !(1u16 << candidate);
         self.candidates &= CANDIDATE_MASK;
     }
 
-    pub fn remove_candidates(&mut self, cands: Vec<u8>) {
-        for cand in cands {
-            self.remove_candidate(cand);
+    pub fn remove_candidates(&mut self, candidates: Vec<u8>) {
+        for candidate in candidates {
+            self.remove_candidate(candidate);
         }
     }
 
